@@ -1,0 +1,70 @@
+# Smart Product Pricing – Approach Overview
+
+Team & Roles 
+- Member 1:Data, Infrastructure, Flask deployment  
+- Member 2: Machine Learning & Feature Engineering  
+- Member 3: Image Processing & Embeddings  
+
+
+Problem Framing
+- Objective: Predict product prices using textual and image data.  
+- Metric: SMAPE  
+- Constraints: No external data; only provided dataset  
+
+
+
+Data
+- Columns Used: `sample_id`, `catalog_content` (title/description/IPQ), `image_link`  
+- Preprocessing: Missing value handling, log transformation of `price` to handle outliers  
+
+
+
+Feature Engineering
+Text Features: 
+- Cleaned text, split title/description  
+- Extracted Item Pack Quantity (IPQ)  
+- TF-IDF (1–2 grams)  
+- Text length and keyword flags  
+
+Image Features (Member 3): 
+- Downloaded images with retries  
+- Resized and normalized images (224×224)  
+- Extracted embeddings using pretrained CNNs (ResNet50/EfficientNet)  
+- Aligned embeddings with `sample_id` for merging with text/numeric features  
+
+
+ Modeling
+- Baselines: Linear Regression, Random Forest  
+- Boosting: LightGBM, XGBoost  
+- Target: log(price); inverse transform during inference  
+- Ensemble: Averaging predictions from multiple models  
+
+
+Validation & Evaluation
+- Train/validation split  
+- SMAPE monitored; robustness to outliers  
+- Public leaderboard comparison  
+
+---
+
+Inference Pipeline
+1. Merge text + image features  
+2. Predict log(price) for all test `sample_id`  
+3. Inverse transform to get final price predictions  
+4. Ensure predicted price > 0  
+
+
+
+Tools & Libraries
+- `pandas`, `scikit-learn`, `LightGBM`, `XGBoost`  
+- `torch`, `torchvision`, `keras` for image embeddings  
+- Flask for optional deployment  
+
+
+
+ Compliance & Limitations
+- No external data or price scraping  
+- Limitations: quantity/brand parsing, ensemble tuning, robust image download  
+
+
+
